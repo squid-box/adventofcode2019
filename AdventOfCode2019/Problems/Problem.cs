@@ -1,6 +1,7 @@
 ﻿namespace AdventOfCode2019.Problems
 {
     using System.IO;
+    using System.Linq;
 
     /// <summary>
     /// Base for all problem solutions.
@@ -15,8 +16,9 @@
         /// <summary>
         /// Gets the input of this problem.
         /// </summary>
-        public string[] Input => File.ReadAllLines($"Input{Path.DirectorySeparatorChar}{Number}.input");
-        
+        public string[] Input => File.ReadAllLines($"Input{Path.DirectorySeparatorChar}{Number}.input")
+            .Where(l => !string.IsNullOrEmpty(l)).ToArray();
+
         protected Problem(int number)
         {
             Number = number;
@@ -30,7 +32,7 @@
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Problem #{Number}:\n{Answer()}";
+            return $"Problem #{Number}:{1}{Answer()}";
         }
     }
 }
