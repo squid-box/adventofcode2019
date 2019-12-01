@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2019.Problems
+﻿namespace AdventOfCode2019
 {
     using System.IO;
     using System.Linq;
