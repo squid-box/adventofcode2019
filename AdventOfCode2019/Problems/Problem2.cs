@@ -66,11 +66,9 @@ namespace AdventOfCode2019.Problems
                     var copy = (int[])input.Clone();
                     copy = RunProgram(copy, noun, verb);
 
-                    Console.WriteLine($"Noun: {noun}, Verb: {verb} | Gives {copy[0]}");
-
                     if (copy[0] == target)
                     {
-                        return (100 * verb) + noun;
+                        return (100 * noun) + verb;
                     }
                 }
             }
