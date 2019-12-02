@@ -1,5 +1,6 @@
 ﻿namespace AdventOfCode2019
 {
+    using System;
     using System.IO;
     using System.Linq;
 
@@ -32,7 +33,7 @@
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Problem #{Number}:{1}{Answer()}";
+            return $"Problem #{Number}:{Environment.NewLine}{Answer()}";
         }
     }
 }
