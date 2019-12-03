@@ -3,7 +3,7 @@
     using System;
     using Utils;
 
-    public class Problem1 : Problem
+    internal class Problem1 : Problem
 	{
 		public Problem1() : base(1)
 		{

@@ -1,14 +1,15 @@
 ﻿namespace AdventOfCode2019.Utils
 {
 	using System;
+    using System.Collections;
 
-    public class Coordinate
+    public class Coordinate : IComparable
     {
-        public int X { get; }
+        public int X { get; set; }
         
-        public int Y { get; }
+        public int Y { get; set; }
 
-        public Coordinate(int x, int y)
+        public Coordinate(int x = 0, int y = 0)
         {
             X = x;
             Y = y;
@@ -32,6 +33,19 @@
         public override int GetHashCode()
         {
             return X.GetHashCode() + Y.GetHashCode();
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is Coordinate other)
+            {
+                if (other.Equals(this))
+                {
+                    return 0;
+                }
+            }
+
+            return -1;
         }
 
         public static int ManhattanDistance(Coordinate origin, Coordinate destination)

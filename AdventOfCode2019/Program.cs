@@ -44,7 +44,8 @@
             var types = Assembly
                 .GetExecutingAssembly()
                 .GetTypes()
-                .Where(type => type.Namespace == "AdventOfCode2019.Problems");
+                .Where(type => type.Namespace == "AdventOfCode2019.Problems")
+                .Where(type => type.Name.StartsWith("Problem"));
 
             return types.Select(type => (Problem) Activator.CreateInstance(type)).ToList();
         }

@@ -1,9 +1,8 @@
 namespace AdventOfCode2019.Problems
 {
-    using System;
     using Utils;
 
-    public class Problem2 : Problem
+    internal class Problem2 : Problem
     {
         private const int OpCodeAdd = 1;
         private const int OpCodeMultiply = 2;
