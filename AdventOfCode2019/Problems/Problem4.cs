@@ -78,26 +78,24 @@ namespace AdventOfCode2019.Problems
                 // Check for groups of repeated characters.
                 if (current.Equals(previousDigit))
                 {
-                    hasRepeatingDigits = true;
-
                     digitRepeats++;
+
+                    if (i == digits.Length-1 && digitRepeats == 2)
+                    {
+                        hasRepeatingDigits = true;
+                    }
                 }
                 else
                 {
-                    if (digitRepeats > 1 && digitRepeats % 2 != 0)
+                    if (digitRepeats == 2)
                     {
-                        return false;
+                        hasRepeatingDigits = true;
                     }
 
                     digitRepeats = 1;
                 }
 
                 previousDigit = current;
-            }
-
-            if (digitRepeats > 1 && digitRepeats % 2 != 0)
-            {
-                return false;
             }
 
             return hasRepeatingDigits;
@@ -115,15 +113,15 @@ namespace AdventOfCode2019.Problems
                 if (IsValidPassword(password))
                 {
                     validPasswords++;
-                }
 
-                if (IsValidPasswordPart2(password))
-                {
-                    validPasswordsPartTwo++;
+                    if (IsValidPasswordPart2(password))
+                    {
+                        validPasswordsPartTwo++;
+                    }
                 }
             }
-            // 972 too low
-            return $"Input contains {validPasswords} valid passwords, or {validPasswordsPartTwo} valid passwords.";
+
+            return $"Part 1: {validPasswords}\nPart 2: {validPasswordsPartTwo}";
         }
     }
 }

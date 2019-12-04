@@ -18,9 +18,13 @@ namespace AdventOfCode2019.Tests.Problems
         [TestCase(112233, true)]
         [TestCase(123444, false)]
         [TestCase(111122, true)]
-        [TestCase(111111, true)]
+        [TestCase(112222, true)]
+        [TestCase(111111, false)]
         [TestCase(111333, false)]
         [TestCase(654321, false)]
+        [TestCase(113444, true)]
+        [TestCase(123335, false)]
+        [TestCase(111123, false)]
         public void IsValidPasswordPart2(int password, bool isValid)
         {
             Assert.AreEqual(isValid, Problem4.IsValidPasswordPart2(password));
