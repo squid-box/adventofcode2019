@@ -1,14 +1,129 @@
 namespace AdventOfCode2019.Problems
 {
-    public class Problem4 : Problem
+    using System;
+    using System.Linq;
+
+    internal class Problem4 : Problem
     {
         public Problem4() : base(4)
         {
         }
 
+        internal static Tuple<int, int> ParseInput(string input)
+        {
+            var split = input.Trim().Split('-');
+
+            return new Tuple<int, int>(int.Parse(split[0]), int.Parse(split[1]));
+        }
+
+        internal static bool IsValidPassword(int password)
+        {
+            var passwordString = password.ToString();
+
+            if (passwordString.Length != 6)
+            {
+                return false;
+            }
+
+            var digits = passwordString.Select(i => int.Parse(i.ToString())).ToArray();
+
+            var previousDigit = -1;
+            var hasRepeatingDigits = false;
+
+            for (var i = 0; i < digits.Length; i++)
+            {
+                var current = digits[i];
+
+                if (current < previousDigit)
+                {
+                    return false;
+                }
+
+                if (current.Equals(previousDigit))
+                {
+                    hasRepeatingDigits = true;
+                }
+
+                previousDigit = current;
+            }
+
+            return hasRepeatingDigits;
+        }
+
+        internal static bool IsValidPasswordPart2(int password)
+        {
+            var passwordString = password.ToString();
+
+            if (passwordString.Length != 6)
+            {
+                return false;
+            }
+
+            var digits = passwordString.Select(i => int.Parse(i.ToString())).ToArray();
+
+            var previousDigit = -1;
+            var hasRepeatingDigits = false;
+            var digitRepeats = 1;
+
+            for (var i = 0; i < digits.Length; i++)
+            {
+                var current = digits[i];
+
+                // Ensure we're never decreasing.
+                if (current < previousDigit)
+                {
+                    return false;
+                }
+
+                // Check for groups of repeated characters.
+                if (current.Equals(previousDigit))
+                {
+                    hasRepeatingDigits = true;
+
+                    digitRepeats++;
+                }
+                else
+                {
+                    if (digitRepeats > 1 && digitRepeats % 2 != 0)
+                    {
+                        return false;
+                    }
+
+                    digitRepeats = 1;
+                }
+
+                previousDigit = current;
+            }
+
+            if (digitRepeats > 1 && digitRepeats % 2 != 0)
+            {
+                return false;
+            }
+
+            return hasRepeatingDigits;
+        }
+
         public override string Answer()
         {
-            throw new System.NotImplementedException();
+            var validPasswords = 0;
+            var validPasswordsPartTwo = 0;
+
+            var (lowerLimit, upperLimit) = ParseInput(Input[0]);
+
+            for (var password =  lowerLimit; password <= upperLimit; password++)
+            {
+                if (IsValidPassword(password))
+                {
+                    validPasswords++;
+                }
+
+                if (IsValidPasswordPart2(password))
+                {
+                    validPasswordsPartTwo++;
+                }
+            }
+            // 972 too low
+            return $"Input contains {validPasswords} valid passwords, or {validPasswordsPartTwo} valid passwords.";
         }
     }
 }
