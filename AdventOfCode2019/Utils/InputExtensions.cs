@@ -16,5 +16,10 @@
         {
             return input.Select(int.Parse).ToArray();
         }
+
+        public static int[] ConvertSeparatedListToInts(this string input, char separator)
+        {
+            return input.Split(separator).ConvertToInt();
+        }
     }
 }
