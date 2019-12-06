@@ -17,7 +17,7 @@ namespace AdventOfCode2019.Problems
 
             grid.ExecuteInstructions(Input[0].Split(','), Input[1].Split(','));
 
-            return $"Smallest manhattan distance to intersection: {grid.FindClosestIntersection()}\nSmallest actual distance to intersection: {grid.FindIntersectionWithFewestSteps()}";
+            return $"Part 1: {grid.FindClosestIntersection()}\nPart 2: {grid.FindIntersectionWithFewestSteps()}";
         }
     }
 
@@ -63,7 +63,7 @@ namespace AdventOfCode2019.Problems
         private readonly Coordinate[] _wires;
         private readonly HashSet<Location> _visitedLocations;
 
-        private int[] _wireDistances;
+        private readonly int[] _wireDistances;
         
         internal Grid()
         {

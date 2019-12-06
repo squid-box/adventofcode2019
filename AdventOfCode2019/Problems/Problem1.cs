@@ -22,7 +22,7 @@
                 actualSum += CalculateActualFuelRequirement(module);
             }
 
-            return $"Total fuel required is {naiveSum} units, actual fuel required is {actualSum} units.";
+            return $"Part 1: {naiveSum}\nPart 2: {actualSum}";
         }
 
         internal static int CalculateModuleFuelRequirement(int moduleMass)

@@ -30,10 +30,8 @@ namespace AdventOfCode2019.Problems
             var previousDigit = -1;
             var hasRepeatingDigits = false;
 
-            for (var i = 0; i < digits.Length; i++)
+            foreach (var current in digits)
             {
-                var current = digits[i];
-
                 if (current < previousDigit)
                 {
                     return false;
@@ -68,12 +66,6 @@ namespace AdventOfCode2019.Problems
             for (var i = 0; i < digits.Length; i++)
             {
                 var current = digits[i];
-
-                // Ensure we're never decreasing.
-                if (current < previousDigit)
-                {
-                    return false;
-                }
 
                 // Check for groups of repeated characters.
                 if (current.Equals(previousDigit))
