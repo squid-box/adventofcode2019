@@ -1,6 +1,5 @@
 ﻿namespace AdventOfCode2019.Utils
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -9,7 +8,11 @@
     public class IntCodeComputer
     {
         private readonly int[] _originalProgram;
+        private readonly List<int> _input;
+        private readonly List<int> _output;
         private int[] _registers;
+        private int _instructionPointer;
+        private int _inputPointer;
 
         /// <summary>
         /// Constructs a new <see cref="IntCodeComputer"/> with a given program.
@@ -18,6 +21,12 @@
         public IntCodeComputer(int[] program)
         {
             _originalProgram = program;
+            _input = new List<int>();
+            _output = new List<int>();
+            _instructionPointer = 0;
+            _inputPointer = 0;
+            HasHalted = false;
+
             ResetProgram();
         }
 
@@ -27,9 +36,19 @@
         public int ZeroRegister => _registers[0];
 
         /// <summary>
-        /// Gets the latest output from the program.
+        /// Whether or not this <see cref="IntCodeComputer"/> is waiting for new input.
         /// </summary>
-        public int Output { get; private set; }
+        public bool WaitingForInput { get; private set; }
+
+        /// <summary>
+        /// Whether or not this <see cref="IntCodeComputer"/> has output ready to read.
+        /// </summary>
+        public bool HasOutput => _output.Count > 0;
+
+        /// <summary>
+        /// Whether or not this <see cref="IntCodeComputer"/> has halted its program or not.
+        /// </summary>
+        public bool HasHalted { get; private set; }
 
         /// <summary>
         /// Resets the computer to its original program state.
@@ -37,6 +56,12 @@
         public void ResetProgram()
         {
             _registers = (int[])_originalProgram.Clone();
+            _output.Clear();
+            _input.Clear();
+            WaitingForInput = false;
+            HasHalted = false;
+            _inputPointer = 0;
+            _instructionPointer = 0;
         }
 
         /// <summary>
@@ -51,110 +76,151 @@
         }
 
         /// <summary>
-        /// Executes this <see cref="IntCodeComputer"/>s program.
+        /// Adds input to the input queue. Resets <see cref="WaitingForInput"/> property.
         /// </summary>
-        /// <param name="input">Optional input, for programs using <see cref="OpCode.Input"/>.</param>
-        public void RunProgram(int[] input = null)
+        /// <param name="input">Input to add.</param>
+        public void AddInput(int input)
         {
-            var instructionPointer = 0;
-            var inputPointer = 0;
+            _input.Add(input);
+            WaitingForInput = _input.Count == 0;
+        }
+
+        /// <summary>
+        /// Adds input to the input queue. Resets <see cref="WaitingForInput"/> property.
+        /// </summary>
+        /// <param name="input">Input to add.</param>
+        public void AddInput(IEnumerable<int> input)
+        {
+            _input.AddRange(input);
+            WaitingForInput = _input.Count == _inputPointer-1;
+        }
+
+        public List<int> GetOutput()
+        {
+            var output = new List<int>(_output);
+            _output.Clear();
+            return output;
+        }
+
+        public void ContinueProgram(int[] input = null)
+        {
+            if (input != null)
+            {
+                AddInput(input);
+            }
 
             while (true)
             {
-                var opCodeString = _registers[instructionPointer].ToString("D5");
-                var opCode = (OpCode)int.Parse(opCodeString.Substring(3,2));
-                var parameterOneMode = (ParameterMode) int.Parse(opCodeString.Substring(2, 1));
+                var opCodeString = _registers[_instructionPointer].ToString("D5");
+                var opCode = (OpCode)int.Parse(opCodeString.Substring(3, 2));
+                var parameterOneMode = (ParameterMode)int.Parse(opCodeString.Substring(2, 1));
                 var parameterTwoMode = (ParameterMode)int.Parse(opCodeString.Substring(1, 1));
                 var parameterThreeMode = (ParameterMode)int.Parse(opCodeString.Substring(0, 1));
 
                 if (opCode == OpCode.Input)
                 {
-                    if (input == null)
+                    if (_inputPointer > _input.Count - 1)
                     {
-                        throw new Exception("Something's very wrong.");
+                        WaitingForInput = true;
+                        break;
                     }
 
-                    _registers[_registers[instructionPointer + 1]] = input[inputPointer++];
-                    instructionPointer += 2;
+                    _registers[_registers[_instructionPointer + 1]] = _input[_inputPointer];
+                    _instructionPointer += 2;
+                    _inputPointer++;
                 }
                 else if (opCode == OpCode.Output)
                 {
-                    Output = _registers[_registers[instructionPointer + 1]];
-                    instructionPointer += 2;
+                    _output.Add(_registers[_registers[_instructionPointer + 1]]);
+                    _instructionPointer += 2;
                 }
                 else if (opCode == OpCode.Halt)
                 {
+                    HasHalted = true;
                     break;
                 }
                 else
                 {
-                    var targetRegister = instructionPointer + 3;
+                    var targetRegister = _instructionPointer + 3;
 
                     var firstValue = parameterOneMode == ParameterMode.PositionMode
-                        ? _registers[_registers[instructionPointer + 1]]
-                        : _registers[instructionPointer + 1];
+                        ? _registers[_registers[_instructionPointer + 1]]
+                        : _registers[_instructionPointer + 1];
 
                     var secondValue = parameterTwoMode == ParameterMode.PositionMode
-                        ? _registers[_registers[instructionPointer + 2]]
-                        : _registers[instructionPointer + 2];
+                        ? _registers[_registers[_instructionPointer + 2]]
+                        : _registers[_instructionPointer + 2];
 
                     switch (opCode)
                     {
                         case OpCode.Add:
                             _registers[_registers[targetRegister]] = firstValue + secondValue;
-                            instructionPointer += 4;
+                            _instructionPointer += 4;
                             break;
                         case OpCode.Multiply:
                             _registers[_registers[targetRegister]] = firstValue * secondValue;
-                            instructionPointer += 4;
+                            _instructionPointer += 4;
                             break;
                         case OpCode.JumpIfTrue:
                             if (firstValue != 0)
                             {
-                                instructionPointer = secondValue;
+                                _instructionPointer = secondValue;
                             }
                             else
                             {
-                                instructionPointer += 3;
+                                _instructionPointer += 3;
                             }
                             break;
                         case OpCode.JumpIfFalse:
                             if (firstValue == 0)
                             {
-                                instructionPointer = secondValue;
+                                _instructionPointer = secondValue;
                             }
                             else
                             {
-                                instructionPointer += 3;
+                                _instructionPointer += 3;
                             }
                             break;
                         case OpCode.LessThan:
                             if (firstValue < secondValue)
                             {
-                                _registers[_registers[instructionPointer + 3]] = 1;
+                                _registers[_registers[_instructionPointer + 3]] = 1;
                             }
                             else
                             {
-                                _registers[_registers[instructionPointer + 3]] = 0;
+                                _registers[_registers[_instructionPointer + 3]] = 0;
                             }
 
-                            instructionPointer += 4;
+                            _instructionPointer += 4;
                             break;
                         case OpCode.Equals:
                             if (firstValue == secondValue)
                             {
-                                _registers[_registers[instructionPointer + 3]] = 1;
+                                _registers[_registers[_instructionPointer + 3]] = 1;
                             }
                             else
                             {
-                                _registers[_registers[instructionPointer + 3]] = 0;
+                                _registers[_registers[_instructionPointer + 3]] = 0;
                             }
 
-                            instructionPointer += 4;
+                            _instructionPointer += 4;
                             break;
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Executes this <see cref="IntCodeComputer"/>s program.
+        /// </summary>
+        /// <param name="input">Optional input, for programs using <see cref="OpCode.Input"/>.</param>
+        public void RunProgram(int[] input = null)
+        {
+            _instructionPointer = 0;
+            _inputPointer = 0;
+            _input.Clear();
+
+            ContinueProgram(input);
         }
     }
 

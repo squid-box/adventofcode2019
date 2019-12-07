@@ -15,17 +15,16 @@
         /// <typeparam name="T">Type of data in collection.</typeparam>
         /// <param name="input">The collection to return permutations for.</param>
         /// <param name="length">Length of input.</param>
-        /// <returns></returns>
+        /// <returns>All possible permutations of the given collection.</returns>
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> input, int length = -1)
         {
-            if (length == 1)
+            switch (length)
             {
-                return input.Select(t => new[] { t });
-            }
-
-            if (length == -1)
-            {
-                length = input.ToArray().Length;
+                case 1:
+                    return input.Select(t => new[] { t });
+                case -1:
+                    length = input.ToArray().Length;
+                    break;
             }
 
             return GetPermutations(input, length - 1)
