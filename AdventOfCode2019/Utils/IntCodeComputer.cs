@@ -1,6 +1,7 @@
 ﻿namespace AdventOfCode2019.Utils
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// A computer capable of executing IntCode programs.
@@ -53,9 +54,10 @@
         /// Executes this <see cref="IntCodeComputer"/>s program.
         /// </summary>
         /// <param name="input">Optional input, for programs using <see cref="OpCode.Input"/>.</param>
-        public void RunProgram(int? input = null)
+        public void RunProgram(int[] input = null)
         {
             var instructionPointer = 0;
+            var inputPointer = 0;
 
             while (true)
             {
@@ -72,7 +74,7 @@
                         throw new Exception("Something's very wrong.");
                     }
 
-                    _registers[_registers[instructionPointer + 1]] = input.Value;
+                    _registers[_registers[instructionPointer + 1]] = input[inputPointer++];
                     instructionPointer += 2;
                 }
                 else if (opCode == OpCode.Output)

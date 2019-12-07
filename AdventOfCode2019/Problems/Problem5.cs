@@ -12,11 +12,11 @@ namespace AdventOfCode2019.Problems
         {
             var computer = new IntCodeComputer(Input[0].ConvertSeparatedListToInts(','));
 
-            computer.RunProgram(1);
+            computer.RunProgram(new []{1});
             var partOne = computer.Output;
 
             computer.ResetProgram();
-            computer.RunProgram(5);
+            computer.RunProgram(new[] { 5 });
             var partTwo = computer.Output;
 
             return $"Part 1: {partOne}\nPart 2: {partTwo}";
